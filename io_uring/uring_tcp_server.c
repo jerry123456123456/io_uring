@@ -75,7 +75,7 @@ int set_event_accept(struct io_uring *ring,int sockfd,struct sockaddr *addr,sock
 
 
 int main(int argc,char*argv[]){
-	unsigned short port=9999;
+	unsigned short port=2048;
 	int sockfd=init_server(port);
 	
 	struct io_uring_params params;
@@ -117,13 +117,15 @@ int main(int argc,char*argv[]){
 				if(ret==0){
 					close(result.fd);
 				}else if(ret>0){
-					set_event_send(&ring,result.fd,buffer,ret,0);
+					// set_event_send(&ring,result.fd,buffer,ret,0);
+					set_event_recv(&ring,result.fd,buffer,ret,0);
 				}				
 			}else if(result.event==EVENT_WRITE){
 				int ret=entries->res;
-				//printf("io_uring_peek_batch_cqe_send: %d, %s\n",ret,buffer);
+				printf("io_uring_peek_batch_cqe_send: %d, %s\n",ret,buffer);
 
-				set_event_recv(&ring,result.fd,buffer,BUFFER_LENGTH,0);
+				//set_event_recv(&ring,result.fd,buffer,BUFFER_LENGTH,0);
+				set_event_send(&ring,result.fd,buffer,ret,0);
 			}
 		}
 		io_uring_cq_advance(&ring,nready);  //把cq队列清空
